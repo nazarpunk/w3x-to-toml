@@ -1,0 +1,21 @@
+{
+  "name": "w3x-to-toml",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "nazarpunk <nazarpunk@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "warodel": "^1.0.9"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.22.5",
+    "@babel/node": "^7.22.5",
+    "electron": "^25.2.0",
+    "electron-packager": "^17.1.1",
+    "electron-vite": "^1.0.24"
+  }
+}
