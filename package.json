@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "esbuild renderer.js --platform=node --target=esnext --format=cjs --bundle --outfile=dist/renderer.js && electron --inspect=5858 --enable-logging .",
+    "start": "electron ."
   },
   "author": "nazarpunk <nazarpunk@gmail.com>",
   "license": "MIT",
@@ -12,10 +12,8 @@
     "warodel": "^1.0.9"
   },
   "devDependencies": {
-    "@babel/core": "^7.22.5",
-    "@babel/node": "^7.22.5",
+    "esbuild": "0.18.10",
     "electron": "^25.2.0",
-    "electron-packager": "^17.1.1",
-    "electron-vite": "^1.0.24"
+    "electron-packager": "^17.1.1"
   }
 }
