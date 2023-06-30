@@ -2,5 +2,4 @@
 **/.DS_Store
 package-lock.json
 /node_modules/
-
-out/
+/out/w3x-to-toml-darwin-x64/
