@@ -4,11 +4,17 @@ const {
     ipcMain,
     dialog
 } = require('electron');
+
 const path = require('path');
 
-try {
-    require('electron-reloader')(module)
-} catch (_) {
+const electron = require('electron');
+
+if (!electron.app.isPackaged) {
+    require('electron-reloader')(module, {
+        ignore: ['./renderer.js']
+    })
+
+    console.log('reload');
 }
 
 const createWindow = () => {
@@ -30,20 +36,10 @@ const createWindow = () => {
     });
 
     win.loadFile('index.html').then();
-
-    ipcMain.on('DialogPreload-send', () => {
-        dialog.showOpenDialogSync({
-                properties: ['openFile', 'multiSelections'],
-                filters: [
-                    {name: 'Game data', extensions: ['w3a', 'w3u', 'toml']},
-                ],
-            }
-        );
-    });
 }
 
 app.whenReady().then(() => {
-    ipcMain.handle('dialog', (event, method, params) => dialog[method](params));
+    ipcMain.handle('dialog', async (event, method, params) => await dialog[method](params));
 
     createWindow();
 

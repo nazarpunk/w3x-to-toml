@@ -6,11 +6,12 @@
   "license": "MIT",
   "main": "main.js",
   "scripts": {
-    "run": "electron .",
+    "start": "electron .",
     "inspect": "electron-forge start --inspect-electron",
-    "build": "esbuild renderer.js --platform=node --target=esnext --format=cjs --bundle --supported:dynamic-import=false --outfile=dist/renderer.js",
+    "watch": "esbuild renderer.js --watch --platform=node --target=esnext --format=cjs --bundle --supported:dynamic-import=false --outfile=dist/renderer.js",
     "package": "electron-forge package",
-    "make": "electron-forge make"
+    "make": "electron-forge make",
+    "start-watch": "concurrently --kill-others \"npm run start\" \"npm run watch\""
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",
@@ -26,6 +27,7 @@
     "@electron/remote": "^2.0.10",
     "electron": "^25.2.0",
     "electron-reloader": "^1.2.3",
-    "esbuild": "0.18.11"
+    "esbuild": "0.18.11",
+    "concurrently": "^8.2.0"
   }
 }

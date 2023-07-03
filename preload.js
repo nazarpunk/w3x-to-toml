@@ -1,7 +1,5 @@
-const {ipcRenderer, contextBridge} = require('electron');
+const {contextBridge, ipcRenderer} = require('electron');
 
-contextBridge.exposeInMainWorld('DialogPreload', {
-    async fileDialog() {
-        ipcRenderer.send('DialogPreload-send');
-    }
+contextBridge.exposeInMainWorld('electron', {
+    openDialog: (method, config) => ipcRenderer.invoke('dialog', method, config),
 });

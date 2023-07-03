@@ -56,5 +56,5 @@ button {
     background-color: #2a3369;
     padding: .2rem .5rem;
     border-radius: 3px;
-
+    min-width: 0;
 }
