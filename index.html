@@ -2,12 +2,19 @@
 <html>
 <head>
     <meta charset="UTF-8"/>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
     <title>w3x-to-toml</title>
     <link href="./main.css" rel="stylesheet">
 </head>
 <body>
-<button>Text</button>
+<button class="files">Select files</button>
+<div class="file-container">
+    <div>war3map.w3a</div>
+    <div>to</div>
+    <div>war3map.w3a.toml</div>
+</div>
+<div class="file-container">war3map.w3a</div>
 </body>
-<script src="./dist/renderer.js"></script>
+<script src="./renderer.js"></script>
 </html>

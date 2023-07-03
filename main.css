@@ -1,3 +1,60 @@
 :root {
     color-scheme: dark;
 }
+
+html {
+    background-color: #202124;
+    font-family: Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1.6rem;
+    margin: 0;
+    word-wrap: break-word;
+    color: #e4e6eB;
+    background-size: 16px 16px;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    display: flex;
+    padding: 1rem;
+    flex-direction: column;
+    margin: 0;
+    gap: 1rem;
+}
+
+button {
+    font-family: Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    cursor: pointer;
+    appearance: none;
+    border: 0;
+    padding: 0.6rem 1rem;
+    border-radius: 4px;
+    box-shadow: 1px 1px black;
+    background-color: #5f045f;
+}
+
+button:hover {
+    background-color: #750675;
+}
+
+button {
+    display: block;
+    width: 100%;
+}
+
+.file-container {
+    padding: .3rem;
+    background-color: #2d2e34;
+    border-radius: 3px;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.file-container > div {
+    background-color: #2a3369;
+    padding: .2rem .5rem;
+    border-radius: 3px;
+
+}

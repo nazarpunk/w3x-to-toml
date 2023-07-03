@@ -1,7 +1,10 @@
-import {W3A} from "warodel/w3abdhqtu/W3A.mjs";
+/**
+ * @typedef {Dialog} DialogPreload
+ */
 
-document.querySelector('button').addEventListener('click', () => {
-    console.log('click 2');
-    const w = new W3A(new ArrayBuffer(0));
-    console.log(w);
+document.querySelector('.files').addEventListener('click', async () => {
+
+    const a = await DialogPreload.fileDialog();
+
+    console.log('a', a);
 });

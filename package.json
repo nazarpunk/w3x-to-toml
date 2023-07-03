@@ -6,8 +6,9 @@
   "license": "MIT",
   "main": "main.js",
   "scripts": {
-    "build": "esbuild renderer.js --platform=node --target=esnext --format=cjs --bundle --supported:dynamic-import=false --outfile=dist/renderer.js && electron --inspect=5858 --enable-logging .",
-    "start": "electron-forge start",
+    "run": "electron .",
+    "inspect": "electron-forge start --inspect-electron",
+    "build": "esbuild renderer.js --platform=node --target=esnext --format=cjs --bundle --supported:dynamic-import=false --outfile=dist/renderer.js",
     "package": "electron-forge package",
     "make": "electron-forge make"
   },
@@ -22,7 +23,9 @@
     "@electron-forge/maker-squirrel": "^6.2.1",
     "@electron-forge/maker-zip": "^6.2.1",
     "@electron-forge/plugin-auto-unpack-natives": "^6.2.1",
+    "@electron/remote": "^2.0.10",
     "electron": "^25.2.0",
-    "esbuild": "0.18.10"
+    "electron-reloader": "^1.2.3",
+    "esbuild": "0.18.11"
   }
 }
