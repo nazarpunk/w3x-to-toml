@@ -4142,11 +4142,14 @@ var W3A = class _W3A extends W3ABDHQTU {
 };
 
 // renderer.js
+var electron = window.electron;
+var dialog = window.dialog;
+var fs = window.fs;
 var buttonSelect = document.querySelector(".button-select");
 var buttonClear = document.querySelector(".button-clear");
 var filesContainer = document.querySelector(".files");
 buttonSelect.addEventListener("click", async () => {
-  const paths = await electron.openDialog("showOpenDialogSync", {
+  const paths = await electron.showOpenDialogSync({
     title: "Select game data file",
     buttonLabel: "Open",
     properties: ["openFile", "multiSelections"],
@@ -4154,14 +4157,14 @@ buttonSelect.addEventListener("click", async () => {
       { name: "Game data", extensions: ["w3a", "w3u", "toml"] }
     ]
   });
+  console.log(paths);
   if (paths === void 0)
     return;
   const w3a = new W3A(new ArrayBuffer(0));
 });
 buttonClear.addEventListener("click", async () => {
-  console.log("click");
-  const s = await fs.readFile("/Users/nazarpunk/Downloads/wa.toml");
-  console.log(1, s);
+  const s = await fs.readFileSync("/Users/nazarpunk/Downloads/wa.toml", { encoding: "utf8" });
+  console.log("1", s);
 });
 /*! Bundled license information:
 

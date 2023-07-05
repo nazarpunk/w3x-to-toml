@@ -33,9 +33,10 @@ const createWindow = () => {
     win.loadFile('index.html').then();
 }
 
+
 app.whenReady().then(() => {
-    ipcMain.handle('dialog', async (event, method, params) => await dialog[method](params));
-    ipcMain.handle('readFile', async (event, path) => await fs.readFileSync(path));
+    ipcMain.handle('showOpenDialogSync', (event, options) => dialog.showOpenDialogSync(options));
+    ipcMain.handle('readFileSync', (event, path, options) => fs.readFileSync(path, options));
 
     createWindow();
 

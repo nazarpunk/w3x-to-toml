@@ -1,9 +1,9 @@
 const {contextBridge, ipcRenderer} = require('electron');
 
 contextBridge.exposeInMainWorld('electron', {
-    openDialog: (method, config) => ipcRenderer.invoke('dialog', method, config),
+    showOpenDialogSync: options => ipcRenderer.invoke('showOpenDialogSync', options),
 });
 
 contextBridge.exposeInMainWorld('fs', {
-    readFile: path => ipcRenderer.invoke('readFile', path),
+    readFileSync: (path, options) => ipcRenderer.invoke('readFileSync', path, options),
 });
