@@ -68,11 +68,11 @@ var CDataView = class extends DataView {
   get string() {
     const list = [];
     while (this.cursor < this.byteLength) {
-      const b2 = super.getUint8(this.cursor);
+      const b = super.getUint8(this.cursor);
       this.cursor += 1;
-      if (b2 === 0)
+      if (b === 0)
         break;
-      list.push(b2);
+      list.push(b);
     }
     return new TextDecoder("utf-8").decode(new Uint8Array(list).buffer);
   }
@@ -91,12 +91,12 @@ var CDataView = class extends DataView {
   getStringFixed(length) {
     let value = "";
     for (let i = 0; i < length; i++) {
-      const b2 = this.uint8;
-      if (b2 === 0) {
+      const b = this.uint8;
+      if (b === 0) {
         this.cursor += length - i - 1;
         break;
       }
-      value += String.fromCharCode(b2);
+      value += String.fromCharCode(b);
     }
     return value;
   }
@@ -1384,9 +1384,9 @@ var defineProperties = (
     return Object_defineProperties(object, created);
   }
 );
-var fpc = (c2) => {
-  freeze(freeze(c2).prototype);
-  return c2;
+var fpc = (c) => {
+  freeze(freeze(c).prototype);
+  return c;
 };
 var _29_ = /(?:0[1-9]|1\d|2\d)/;
 var _30_ = /(?:0[1-9]|[12]\d|30)/;
@@ -4142,12 +4142,10 @@ var W3A = class _W3A extends W3ABDHQTU {
 };
 
 // renderer.js
-var a;
-var b = () => (a ??= 1) + 2;
-var c = () => (a ??= 3) + 4;
-console.log(c() + b());
-console.log(b() + c());
-document.querySelector(".files").addEventListener("click", async () => {
+var buttonSelect = document.querySelector(".button-select");
+var buttonClear = document.querySelector(".button-clear");
+var filesContainer = document.querySelector(".files");
+buttonSelect.addEventListener("click", async () => {
   const paths = await electron.openDialog("showOpenDialogSync", {
     title: "Select game data file",
     buttonLabel: "Open",
@@ -4156,11 +4154,14 @@ document.querySelector(".files").addEventListener("click", async () => {
       { name: "Game data", extensions: ["w3a", "w3u", "toml"] }
     ]
   });
-  console.log("11111");
   if (paths === void 0)
     return;
-  console.log(paths);
   const w3a = new W3A(new ArrayBuffer(0));
+});
+buttonClear.addEventListener("click", async () => {
+  console.log("click");
+  const s = await fs.readFile("/Users/nazarpunk/Downloads/wa.toml");
+  console.log(1, s);
 });
 /*! Bundled license information:
 

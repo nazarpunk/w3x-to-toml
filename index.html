@@ -5,15 +5,16 @@
     <meta http-equiv="Content-Security-Policy"
           content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
     <title>w3x-to-toml</title>
+    <link href="./fonts/JetBrainsMono/JetBrainsMono.css" rel="stylesheet">
     <link href="./main.css" rel="stylesheet">
 </head>
 <body>
-<button class="files">Select files</button>
-<div class="file-container">
-    <div>war3map.w3a</div>
-    <div>to</div>
-    <div>war3map.w3a.toml</div>
+<div class="buttons">
+    <button class="button-select" type="button">Select</button>
+    <button class="button-clear" type="button" >Clear</button>
+    <button class="button-start" type="button" disabled>Start</button>
 </div>
+<div class="files pre"></div>
 </body>
 <script src="./dist/renderer.js"></script>
 </html>

@@ -6,15 +6,12 @@ const {
 } = require('electron');
 
 const path = require('path');
+const fs = require("fs");
 
-const electron = require('electron');
-
-if (!electron.app.isPackaged) {
+if (!app.isPackaged) {
     require('electron-reloader')(module, {
         ignore: ['./renderer.js']
     })
-
-    console.log('reload');
 }
 
 const createWindow = () => {
@@ -27,11 +24,9 @@ const createWindow = () => {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: true,
             nodeIntegrationInWorker: true,
-            enableRemoteModule: true,
+            enableRemoteModule: false,
             contextIsolation: true,
-            //devTools: true,
-            //disableDialogs: false,
-            //sandbox: false,
+            devTools: !app.isPackaged,
         }
     });
 
@@ -40,6 +35,7 @@ const createWindow = () => {
 
 app.whenReady().then(() => {
     ipcMain.handle('dialog', async (event, method, params) => await dialog[method](params));
+    ipcMain.handle('readFile', async (event, path) => await fs.readFileSync(path));
 
     createWindow();
 

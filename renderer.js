@@ -1,18 +1,18 @@
-let a;
-const b = () => (a ??= 1) + 2;
-const c = () => (a ??= 3) + 4;
-
-console.log(c() + b());
-console.log(b() + c());
-
-
-/**
- * @typedef {Electron} electron
- */
+/** @typedef {Electron} electron */
+/** @typedef {fs} fs */
 
 import {W3A} from "warodel/w3abdhqtu/W3A.mjs";
 
-document.querySelector('.files').addEventListener('click', async () => {
+const buttonSelect = document.querySelector('.button-select');
+const buttonClear = document.querySelector('.button-clear');
+const filesContainer = document.querySelector('.files');
+
+/*
+"/Users/nazarpunk/Downloads/wa.toml"
+"/Users/nazarpunk/Downloads/wa.w3u"
+ */
+
+buttonSelect.addEventListener('click', async () => {
     const paths = await electron.openDialog('showOpenDialogSync', {
         title: "Select game data file",
         buttonLabel: "Open",
@@ -21,12 +21,19 @@ document.querySelector('.files').addEventListener('click', async () => {
             {name: 'Game data', extensions: ['w3a', 'w3u', 'toml']},
         ],
     });
-    console.log('11111');
 
     if (paths === undefined) return;
 
-    console.log(paths);
-
-
     const w3a = new W3A(new ArrayBuffer(0));
 });
+
+buttonClear.addEventListener('click', async () => {
+    console.log('click');
+
+    const s = await fs.readFile('/Users/nazarpunk/Downloads/wa.toml');
+
+
+    console.log(1, s);
+
+});
+
