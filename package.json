@@ -30,6 +30,12 @@
       "publish": [
         "github"
       ]
+    },
+    "linux": {
+      "target": "AppImage",
+      "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+      "icon": "icons/icon.png",
+      "category": "Development"
     }
   }
 }
