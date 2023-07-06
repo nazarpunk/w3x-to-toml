@@ -169,13 +169,13 @@ buttonStart.addEventListener('click', async () => {
     buttons();
 });
 
-/*
-fileList.add([
-    '/Users/nazarpunk/Downloads/wa.w3u',
-    '/Users/nazarpunk/Downloads/wa.toml',
-    '/Users/nazarpunk/Downloads/wa.w3u.toml',
-]).then(() => {
-    fileList.render = filesContainer;
-    buttons();
-});
- */
+if (0) {
+    fileList.add([
+        '/Users/nazarpunk/Downloads/wa.w3u',
+        '/Users/nazarpunk/Downloads/wa.toml',
+        '/Users/nazarpunk/Downloads/wa.w3u.toml',
+    ]).then(() => {
+        fileList.render = filesContainer;
+        buttons();
+    });
+}

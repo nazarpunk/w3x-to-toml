@@ -4924,6 +4924,16 @@ buttonStart.addEventListener("click", async () => {
   processContainer.innerHTML = html;
   buttons();
 });
+if (0) {
+  fileList.add([
+    "/Users/nazarpunk/Downloads/wa.w3u",
+    "/Users/nazarpunk/Downloads/wa.toml",
+    "/Users/nazarpunk/Downloads/wa.w3u.toml"
+  ]).then(() => {
+    fileList.render = filesContainer;
+    buttons();
+  });
+}
 /*! Bundled license information:
 
 @ltd/j-toml/index.mjs:
