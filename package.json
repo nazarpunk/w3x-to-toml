@@ -10,6 +10,7 @@
     "watch": "esbuild render/renderer.js --watch --platform=node --target=esnext --format=cjs --bundle --supported:dynamic-import=false --outfile=build/renderer.js",
     "start-watch": "concurrently --kill-others \"yarn run start\" \"yarn run watch\"",
     "postinstall": "electron-builder install-app-deps",
+    "release": "electron-builder",
     "pack": "electron-builder --dir",
     "dist": "electron-builder"
   },
