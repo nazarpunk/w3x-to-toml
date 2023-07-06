@@ -1,5 +1,3 @@
 # w3x-to-toml
 
-```
-npx electron-packager .
-```
+Convert Warcraft 3 binaries to TOML.
