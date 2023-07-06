@@ -1,6 +1,6 @@
 {
   "name": "w3x-to-toml",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "w3x-to-toml",
   "author": "nazarpunk <nazarpunk@gmail.com>",
   "license": "MIT",
@@ -31,8 +31,8 @@
       "./fonts/**/*",
       "main.js",
       "preload.js",
-      "index.html",
-      "main.css"
+      "main.css",
+      "index.html"
     ],
     "win": {
       "target": "portable",
