@@ -32,7 +32,7 @@ buttonSelect.addEventListener('click', async () => {
         buttonLabel: "Open",
         properties: ['openFile', 'multiSelections'],
         filters: [
-            {name: 'Game data', extensions: ['w3a', 'w3u', 'toml']},
+            {name: 'Game data', extensions: ['w3a', 'w3b', 'w3d', 'w3h', 'w3q', 'w3t', 'w3u', 'toml']},
         ],
     });
 
