@@ -845,11 +845,11 @@ var throws = (error) => {
   throw error;
 };
 var EOL = /\r?\n/;
-var todo = (source, path) => {
-  if (typeof path !== "string") {
+var todo = (source, path3) => {
+  if (typeof path3 !== "string") {
     throw TypeError$1(`TOML.parse({ path })`);
   }
-  sourcePath = path;
+  sourcePath = path3;
   sourceLines = source.split(EOL);
   lastLineIndex = sourceLines.length - 1;
   lineIndex = -1;
@@ -3097,7 +3097,7 @@ var W3ABDHQTU = class {
    * @param {boolean} forceType
    * @return {string}
    */
-  _toTOML(map2, { endblock = false, forceType = false } = {}) {
+  _toTOML(map7, { endblock = false, forceType = false } = {}) {
     let out = `[Settings]
 version = ${this.formatVersion} # binary format version
 `;
@@ -3142,9 +3142,9 @@ version = ${this.formatVersion} # binary format version
         }
       }
       let showType = true;
-      if (map2[name] !== void 0) {
+      if (map7[name] !== void 0) {
         showType = false;
-        out += `# ${map2[name].name}
+        out += `# ${map7[name].name}
 `;
       }
       if (showType || forceType) {
@@ -3169,11 +3169,11 @@ version = ${this.formatVersion} # binary format version
             throw new Error(`Unknown variable type: ${prop.type}`);
         }
       }
-      out += `${name} = ${_value(prop, value, prop.type === 3, map2[name]?.singleline ?? false)}`;
+      out += `${name} = ${_value(prop, value, prop.type === 3, map7[name]?.singleline ?? false)}`;
       if (value.length === 1 && prop.level > 0)
         out += `${name}Level = ${prop.level}
 `;
-      if (map2[name]?.data === void 0) {
+      if (map7[name]?.data === void 0) {
         let skip = true;
         for (const d2 of data) {
           if (d2 !== 0 && typeof d2 === "number") {
@@ -3210,13 +3210,13 @@ version = ${this.formatVersion} # binary format version
               break;
             }
           }
-          const map3 = /* @__PURE__ */ new Map();
+          const map8 = /* @__PURE__ */ new Map();
           for (const prop of data.list) {
-            if (!map3.has(prop.id))
-              map3.set(prop.id, []);
-            map3.get(prop.id).push(prop);
+            if (!map8.has(prop.id))
+              map8.set(prop.id, []);
+            map8.get(prop.id).push(prop);
           }
-          map3.forEach((list) => {
+          map8.forEach((list) => {
             const propFirst = list[0];
             if (propFirst.level === 0) {
               _write(propFirst, propFirst.value, propFirst.data, propFirst.end);
@@ -3263,7 +3263,7 @@ version = ${this.formatVersion} # binary format version
    * @param {Object.<string, W3ABDHQTUTOMLMapProperty>} map
    * @return {T}
    */
-  static _fromTOML(self, toml, adq, map2) {
+  static _fromTOML(self, toml, adq, map7) {
     const o = parse$1(toml, {
       joiner: "\n",
       bigint: false
@@ -3289,7 +3289,7 @@ version = ${this.formatVersion} # binary format version
       for (const [attrRawId, attrValue] of Object.entries(propMap)) {
         if (attrRawId.length !== 4)
           continue;
-        if (map2[attrRawId]?.level ?? false) {
+        if (map7[attrRawId]?.level ?? false) {
           let level = propMap["alev"];
           if (level instanceof Array)
             level = level[0];
@@ -3304,8 +3304,8 @@ version = ${this.formatVersion} # binary format version
             itemData.list.push(itemDataValue2);
             if (adq) {
               itemDataValue2.level = i + 1;
-              if (map2[attrRawId]?.data !== void 0) {
-                itemDataValue2.data = map2[attrRawId]?.data;
+              if (map7[attrRawId]?.data !== void 0) {
+                itemDataValue2.data = map7[attrRawId]?.data;
               } else {
                 const data = propMap[`${attrRawId}Data`];
                 if (data === void 0)
@@ -3314,7 +3314,7 @@ version = ${this.formatVersion} # binary format version
                   itemDataValue2.data = data[i];
               }
             }
-            itemDataValue2.fromMap(attrRawId, propMap, map2);
+            itemDataValue2.fromMap(attrRawId, propMap, map7);
             itemDataValue2.value = attrValue[i];
           }
           continue;
@@ -3325,7 +3325,7 @@ version = ${this.formatVersion} # binary format version
           itemDataValue.level = propMap[`${attrRawId}Level`] ?? 0;
           itemDataValue.data = propMap[`${attrRawId}Data`] ?? 0;
         }
-        itemDataValue.fromMap(attrRawId, propMap, map2);
+        itemDataValue.fromMap(attrRawId, propMap, map7);
         itemDataValue.value = attrValue;
       }
     }
@@ -4141,13 +4141,665 @@ var W3A = class _W3A extends W3ABDHQTU {
   }
 };
 
-// renderer.js
+// render/file-map.mjs
+var path = window.path;
+var FileMap = class {
+  /** @type {{}} */
+  map = {};
+  /** @param {string[]} list */
+  async add(list) {
+    for (const item of list) {
+      const parts = await path.parse(item);
+      this.map[parts.dir] ??= {};
+      this.map[parts.dir][parts.base] = parts;
+    }
+  }
+  /** @param {HTMLElement?} elem */
+  clear(elem) {
+    elem && (elem.textContent = "");
+    this.map = {};
+  }
+  get isEmpty() {
+    return Object.keys(this.map).length === 0;
+  }
+  /** @param {HTMLElement} elem */
+  set render(elem) {
+    let html = "";
+    for (const [k, v] of Object.entries(this.map)) {
+      html += `${k}
+`;
+      const list = Object.keys(v);
+      for (let i = 0; i < list.length; i++) {
+        const s = i === list.length - 1 ? "\u2514\u2500\u2500" : "\u251C\u2500\u2500";
+        html += ` ${s} ${list[i]}
+`;
+      }
+    }
+    elem.innerHTML = html;
+  }
+};
+
+// node_modules/warodel/w3abdhqtu/maps/w3b/W3BTOMLMap.mjs
+var map2 = {
+  bnam: { type: 3, name: `(string) Name: Name` },
+  bsuf: { type: 3, name: `(string) EditorSuffix: Editor Suffix` },
+  bcat: { type: 3, name: `(destructableCategory) category: Category`, singleline: true },
+  btil: { type: 3, name: `(tilesetList) tilesets: Tilesets`, singleline: true },
+  btsp: { type: 0, name: `(bool) tilesetSpecific: Has Tileset Specific Data`, singleline: true },
+  bfil: { type: 3, name: `(model) file: Model File`, singleline: true },
+  blit: { type: 0, name: `(bool) lightweight: Model File - Has Lightweight Model`, singleline: true },
+  bflo: { type: 0, name: `(bool) fatLOS: Fat Line of Sight`, singleline: true },
+  btxi: { type: 0, name: `(int) texID: Replaceable Texture ID`, singleline: true },
+  btxf: { type: 3, name: `(texture) texFile: Replaceable Texture File`, singleline: true },
+  buch: { type: 0, name: `(bool) useClickHelper: Show Helper Object for Selection`, singleline: true },
+  bonc: { type: 0, name: `(bool) onCliffs: Placeable on Cliffs`, singleline: true },
+  bonw: { type: 0, name: `(bool) onWater: Placeable on Water`, singleline: true },
+  bcpd: { type: 0, name: `(bool) canPlaceDead: Show Dead Version in Palette`, singleline: true },
+  bwal: { type: 0, name: `(bool) walkable: Is Walkable`, singleline: true },
+  bclh: { type: 0, name: `(int) cliffHeight: Cliff Height`, singleline: true },
+  btar: { type: 3, name: `(targetList) targType: Targeted As`, singleline: true },
+  barm: { type: 3, name: `(armorType) armor: Armor Type`, singleline: true },
+  bvar: { type: 0, name: `(int) numVar: Model File - Variations`, singleline: true },
+  bhps: { type: 2, name: `(unreal) HP: Hit Points`, singleline: true },
+  boch: { type: 2, name: `(unreal) occH: Occlusion Height`, singleline: true },
+  bflh: { type: 2, name: `(unreal) flyH: Fly-Over Height`, singleline: true },
+  bfxr: { type: 2, name: `(unreal) fixedRot: Fixed Rotation`, singleline: true },
+  bsel: { type: 2, name: `(unreal) selSize: Selection Size - Editor`, singleline: true },
+  bmis: { type: 2, name: `(unreal) minScale: Minimum Scale`, singleline: true },
+  bmas: { type: 2, name: `(unreal) maxScale: Maximum Scale`, singleline: true },
+  bcpr: { type: 0, name: `(bool) canPlaceRandScale: Can Place Random Scale`, singleline: true },
+  bmap: { type: 2, name: `(unreal) maxPitch: Maximum Pitch Angle (degrees)`, singleline: true },
+  bmar: { type: 2, name: `(unreal) maxRoll: Max Roll Angle (degrees)`, singleline: true },
+  brad: { type: 2, name: `(unreal) radius: Elevation Sample Radius`, singleline: true },
+  bfra: { type: 2, name: `(unreal) fogRadius: Fog Radius`, singleline: true },
+  bfvi: { type: 0, name: `(bool) fogVis: Fog Visibility`, singleline: true },
+  bptx: { type: 3, name: `(pathingTexture) pathTex: Pathing Texture`, singleline: true },
+  bptd: { type: 3, name: `(pathingTexture) pathTexDeath: Pathing Texture (Dead)`, singleline: true },
+  bdsn: { type: 3, name: `(soundLabel) deathSnd: Death`, singleline: true },
+  bsnd: { type: 3, name: `(soundLabel) loopSound: \u0417\u0430\u0446\u0438\u043A\u043B\u0435\u043D\u043D\u044B\u0439 \u0437\u0432\u0443\u043A`, singleline: true },
+  bshd: { type: 3, name: `(shadowTexture) shadow: Shadow`, singleline: true },
+  bsmm: { type: 0, name: `(bool) showInMM: Minimap - Show`, singleline: true },
+  bmmr: { type: 0, name: `(int) MMRed: Minimap Color 1 (Red)`, singleline: true },
+  bmmg: { type: 0, name: `(int) MMGreen: Minimap Color 2 (Green)`, singleline: true },
+  bmmb: { type: 0, name: `(int) MMBlue: Minimap Color 3 (Blue)`, singleline: true },
+  bumm: { type: 0, name: `(bool) useMMColor: Minimap - Use Custom Color`, singleline: true },
+  bbut: { type: 0, name: `(int) buildTime: Build Time`, singleline: true },
+  bret: { type: 0, name: `(int) repairTime: Repair Time`, singleline: true },
+  breg: { type: 0, name: `(int) goldRep: Repair Gold Cost`, singleline: true },
+  brel: { type: 0, name: `(int) lumberRep: Repair Lumber Cost`, singleline: true },
+  busr: { type: 0, name: `(bool) UserList: On User-Specified List`, singleline: true },
+  bvcr: { type: 0, name: `(int) colorR: Tinting Color 1 (Red)`, singleline: true },
+  bvcg: { type: 0, name: `(int) colorG: Tinting Color 2 (Green)`, singleline: true },
+  bvcb: { type: 0, name: `(int) colorB: Tinting Color 3 (Blue)`, singleline: true },
+  bgse: { type: 0, name: `(bool) selectable: Selectable In Game`, singleline: true },
+  bgsc: { type: 1, name: `(real) selcircsize: Selection Size - Game`, singleline: true },
+  bgpm: { type: 3, name: `(model) portraitmodel: Model File - Portrait`, singleline: true }
+};
+var W3BTOMLMap_default = map2;
+
+// node_modules/warodel/w3abdhqtu/W3B.mjs
+var W3B = class _W3B extends W3ABDHQTU {
+  /** @param {Buffer|ArrayBuffer} buffer */
+  constructor(buffer) {
+    super(buffer, false);
+  }
+  /**
+   * @param {string} json
+   * @return {W3B}
+   */
+  static fromJSON(json) {
+    return super._fromJSON(new _W3B(new ArrayBuffer(0)), json, false);
+  }
+  /**
+   * @param {string} ini
+   * @return {W3B}
+   */
+  static fromTOML(ini) {
+    return super._fromTOML(new _W3B(new ArrayBuffer(0)), ini, false, W3BTOMLMap_default);
+  }
+  /** @return {string} */
+  toTOML() {
+    return super._toTOML(W3BTOMLMap_default, { forceType: false });
+  }
+};
+
+// node_modules/warodel/w3abdhqtu/maps/w3d/W3DTOMLMap.mjs
+var map3 = {
+  dnam: { type: 3, name: `(string) Name: Name` },
+  dcat: { type: 3, name: `(doodadCategory) category: Category`, singleline: true },
+  dtil: { type: 3, name: `(tilesetList) tilesets: Tilesets`, singleline: true },
+  dtsp: { type: 0, name: `(bool) tilesetSpecific: Has Tileset Specific Data`, singleline: true },
+  dfil: { type: 3, name: `(model) file: Model File`, singleline: true },
+  dsnd: { type: 3, name: `(soundLabel) soundLoop: Looping Sound`, singleline: true },
+  dsel: { type: 2, name: `(unreal) selSize: Selection Size`, singleline: true },
+  ddes: { type: 2, name: `(unreal) defScale: Default Scale`, singleline: true },
+  dmis: { type: 2, name: `(unreal) minScale: Minimum Scale`, singleline: true },
+  dmas: { type: 2, name: `(unreal) maxScale: Maximum Scale`, singleline: true },
+  dcpr: { type: 0, name: `(bool) canPlaceRandScale: Can Place Random Scale`, singleline: true },
+  duch: { type: 0, name: `(bool) useClickHelper: Use Click Helper`, singleline: true },
+  dimc: { type: 0, name: `(bool) ignoreModelClick: Ignore Model Clicks`, singleline: true },
+  dmap: { type: 2, name: `(unreal) maxPitch: Maximum Pitch Angle (degrees)`, singleline: true },
+  dmar: { type: 2, name: `(unreal) maxRoll: Max Roll Angle (degrees)`, singleline: true },
+  dvis: { type: 2, name: `(unreal) visRadius: Visibility Radius`, singleline: true },
+  dwlk: { type: 0, name: `(bool) walkable: Walkable`, singleline: true },
+  dvar: { type: 0, name: `(int) numVar: Variations`, singleline: true },
+  donc: { type: 0, name: `(bool) onCliffs: Placeable on Cliffs`, singleline: true },
+  donw: { type: 0, name: `(bool) onWater: Placeable on Water`, singleline: true },
+  dflt: { type: 0, name: `(bool) floats: Floats`, singleline: true },
+  dshd: { type: 0, name: `(bool) shadow: Has a Shadow`, singleline: true },
+  dshf: { type: 0, name: `(bool) showInFog: Show in Fog`, singleline: true },
+  danf: { type: 0, name: `(bool) animInFog: Animate in Fog`, singleline: true },
+  dfxr: { type: 2, name: `(unreal) fixedRot: Fixed Rotation`, singleline: true },
+  dptx: { type: 3, name: `(pathingTexture) pathTex: Pathing Texture`, singleline: true },
+  dsmm: { type: 0, name: `(bool) showInMM: Minimap - Show`, singleline: true },
+  dumc: { type: 0, name: `(bool) useMMColor: Minimap - Use Custom Color`, singleline: true },
+  dmmr: { type: 0, name: `(int) MMRed: Minimap Color 1 (Red)`, singleline: true },
+  dmmg: { type: 0, name: `(int) MMGreen: Minimap Color 2 (Green)`, singleline: true },
+  dmmb: { type: 0, name: `(int) MMBlue: Minimap Color 3 (Blue)`, singleline: true },
+  dvr1: { type: 0, name: `(int) vertR [multilevel]: Tinting Color 1 (Red)`, level: true, singleline: true },
+  dvg1: { type: 0, name: `(int) vertG [multilevel]: Tinting Color 2 (Green)`, level: true, singleline: true },
+  dvb1: { type: 0, name: `(int) vertB [multilevel]: Tinting Color 3 (Blue)`, level: true, singleline: true },
+  dusr: { type: 0, name: `(bool) UserList: On User-Specified List`, singleline: true }
+};
+var W3DTOMLMap_default = map3;
+
+// node_modules/warodel/w3abdhqtu/W3D.mjs
+var W3D = class _W3D extends W3ABDHQTU {
+  /** @param {Buffer|ArrayBuffer} buffer */
+  constructor(buffer) {
+    super(buffer, true);
+  }
+  /**
+   * @param {string} json
+   * @return {W3D}
+   */
+  static fromJSON(json) {
+    return super._fromJSON(new _W3D(new ArrayBuffer(0)), json, true);
+  }
+  /**
+   * @param {string} ini
+   * @return {W3D}
+   */
+  static fromTOML(ini) {
+    return super._fromTOML(new _W3D(new ArrayBuffer(0)), ini, true, W3DTOMLMap_default);
+  }
+  /** @return {string} */
+  toTOML() {
+    return super._toTOML(W3DTOMLMap_default, { forceType: false });
+  }
+};
+
+// node_modules/warodel/w3abdhqtu/maps/w3h/W3HTOMLMap.mjs
+var map4 = {
+  fnam: { type: 3, name: `(string) EditorName: Name (Editor Only)` },
+  fnsf: { type: 3, name: `(string) EditorSuffix: Editor Suffix` },
+  ftip: { type: 3, name: `(string) Bufftip: Tooltip` },
+  fube: { type: 3, name: `(string) Buffubertip: Tooltip - Extended` },
+  feff: { type: 0, name: `(bool) isEffect: Is an Effect`, singleline: true },
+  frac: { type: 3, name: `(unitRace) race: Race`, singleline: true },
+  fart: { type: 3, name: `(icon) Buffart: Icon`, singleline: true },
+  ftat: { type: 3, name: `(modelList) TargetArt: Target`, singleline: true },
+  fsat: { type: 3, name: `(modelList) SpecialArt: Special`, singleline: true },
+  feat: { type: 3, name: `(modelList) EffectArt: Effect`, singleline: true },
+  flig: { type: 3, name: `(lightningEffect) LightningEffect: Lightning`, singleline: true },
+  fmat: { type: 3, name: `(modelList) Missileart: Missile Art`, singleline: true },
+  fmsp: { type: 0, name: `(int) Missilespeed: Missile Speed`, singleline: true },
+  fmac: { type: 2, name: `(unreal) Missilearc: Missile Arc`, singleline: true },
+  fmho: { type: 0, name: `(bool) MissileHoming: Missile Homing Enabled`, singleline: true },
+  ftac: { type: 0, name: `(int) Targetattachcount: Target Attachments`, singleline: true },
+  fta0: { type: 3, name: `(stringList) Targetattach: Target Attachment Point 1`, singleline: true },
+  fta1: { type: 3, name: `(stringList) Targetattach1: Target Attachment Point 2`, singleline: true },
+  fta2: { type: 3, name: `(stringList) Targetattach2: Target Attachment Point 3`, singleline: true },
+  fta3: { type: 3, name: `(stringList) Targetattach3: Target Attachment Point 4`, singleline: true },
+  fta4: { type: 3, name: `(stringList) Targetattach4: Target Attachment Point 5`, singleline: true },
+  fta5: { type: 3, name: `(stringList) Targetattach5: Target Attachment Point 6`, singleline: true },
+  feft: { type: 3, name: `(stringList) Effectattach: Effect Attachment Point`, singleline: true },
+  fspt: { type: 3, name: `(stringList) Specialattach: Special Attachment Point`, singleline: true },
+  fefs: { type: 3, name: `(soundLabel) Effectsound: Effect Sound`, singleline: true },
+  fefl: { type: 3, name: `(soundLabel) Effectsoundlooped: Effect Sound (Looping)`, singleline: true },
+  fspd: { type: 0, name: `(spellDetail) Spelldetail: Required Spell Detail`, singleline: true }
+};
+var W3HTOMLMap_default = map4;
+
+// node_modules/warodel/w3abdhqtu/W3H.mjs
+var W3H = class _W3H extends W3ABDHQTU {
+  /** @param {Buffer|ArrayBuffer} buffer */
+  constructor(buffer) {
+    super(buffer, false);
+  }
+  /**
+   * @param {string} json
+   * @return {W3H}
+   */
+  static fromJSON(json) {
+    return super._fromJSON(new _W3H(new ArrayBuffer(0)), json, false);
+  }
+  /**
+   * @param {string} ini
+   * @return {W3H}
+   */
+  static fromTOML(ini) {
+    return super._fromTOML(new _W3H(new ArrayBuffer(0)), ini, false, W3HTOMLMap_default);
+  }
+  /** @return {string} */
+  toTOML() {
+    return super._toTOML(W3HTOMLMap_default, { forceType: false });
+  }
+};
+
+// node_modules/warodel/w3abdhqtu/maps/w3q/W3QTOMLMap.mjs
+var map5 = {
+  gnam: { type: 3, name: `(string) Name [multilevel]: Name`, level: true },
+  gnsf: { type: 3, name: `(string) EditorSuffix [multilevel]: Editor Suffix`, level: true },
+  grac: { type: 3, name: `(unitRace) race: Race`, singleline: true },
+  gtp1: { type: 3, name: `(string) Tip [multilevel]: Tooltip`, level: true },
+  gub1: { type: 3, name: `(string) Ubertip [multilevel]: Tooltip - Extended`, level: true },
+  ghk1: { type: 3, name: `(char) Hotkey [multilevel]: Hotkey`, level: true, singleline: true },
+  gbpx: { type: 0, name: `(int) Buttonpos: Button Position (X)`, singleline: true },
+  gbpy: { type: 0, name: `(int) Buttonpos: Button Position (Y)`, singleline: true },
+  gar1: { type: 3, name: `(icon) Art [multilevel]: Icon`, level: true, singleline: true },
+  gcls: { type: 3, name: `(upgradeClass) class: Class`, singleline: true },
+  glvl: { type: 0, name: `(int) maxlevel: Levels`, singleline: true },
+  gglb: { type: 0, name: `(int) goldbase: Gold Base`, singleline: true },
+  gglm: { type: 0, name: `(int) goldmod: Gold Increment`, singleline: true },
+  glmb: { type: 0, name: `(int) lumberbase: Lumber Base`, singleline: true },
+  glmm: { type: 0, name: `(int) lumbermod: Lumber Increment`, singleline: true },
+  gtib: { type: 0, name: `(int) timebase: Time Base`, singleline: true },
+  gtim: { type: 0, name: `(int) timemod: Time Increment`, singleline: true },
+  gef1: { type: 3, name: `(upgradeEffect) effect1: Effect 1`, singleline: true },
+  gba1: { type: 2, name: `(unreal) base1: Effect 1 - %s`, singleline: true },
+  gmo1: { type: 2, name: `(unreal) mod1: Effect 1 - %s`, singleline: true },
+  gco1: { type: 3, name: `(string) code1: Effect 1 - %s` },
+  gef2: { type: 3, name: `(upgradeEffect) effect2: Effect 2`, singleline: true },
+  gba2: { type: 2, name: `(unreal) base2: Effect 2 - %s`, singleline: true },
+  gmo2: { type: 2, name: `(unreal) mod2: Effect 2 - %s`, singleline: true },
+  gco2: { type: 3, name: `(string) code2: Effect 2 - %s` },
+  gef3: { type: 3, name: `(upgradeEffect) effect3: Effect 3`, singleline: true },
+  gba3: { type: 2, name: `(unreal) base3: Effect 3 - %s`, singleline: true },
+  gmo3: { type: 2, name: `(unreal) mod3: Effect 3 - %s`, singleline: true },
+  gco3: { type: 3, name: `(string) code3: Effect 3 - %s` },
+  gef4: { type: 3, name: `(upgradeEffect) effect4: Effect 4`, singleline: true },
+  gba4: { type: 2, name: `(unreal) base4: Effect 4 - %s`, singleline: true },
+  gmo4: { type: 2, name: `(unreal) mod4: Effect 4 - %s`, singleline: true },
+  gco4: { type: 3, name: `(string) code4: Effect 4 - %s` },
+  ginh: { type: 0, name: `(bool) inherit: Transfer with Unit Ownership`, singleline: true },
+  greq: { type: 3, name: `(techList) Requires [multilevel]: Requirements`, level: true, singleline: true },
+  grqc: { type: 3, name: `(intList) Requiresamount [multilevel]: Requirements - Levels`, level: true, singleline: true },
+  glob: { type: 0, name: `(bool) global: Applies to All Units`, singleline: true }
+};
+var W3QTOMLMap_default = map5;
+
+// node_modules/warodel/w3abdhqtu/W3Q.mjs
+var W3Q = class _W3Q extends W3ABDHQTU {
+  /** @param {Buffer|ArrayBuffer} buffer */
+  constructor(buffer) {
+    super(buffer, true);
+  }
+  /**
+   * @param {string} json
+   * @return {W3Q}
+   */
+  static fromJSON(json) {
+    return super._fromJSON(new _W3Q(new ArrayBuffer(0)), json, true);
+  }
+  /**
+   * @param {string} ini
+   * @return {W3Q}
+   */
+  static fromTOML(ini) {
+    return super._fromTOML(new _W3Q(new ArrayBuffer(0)), ini, true, W3QTOMLMap_default);
+  }
+  /** @return {string} */
+  toTOML() {
+    return super._toTOML(W3QTOMLMap_default, { endblock: false });
+  }
+};
+
+// node_modules/warodel/w3abdhqtu/maps/w3u/W3UTOMLMap.mjs
+var map6 = {
+  iabi: { type: 3, name: `(abilityList) abilList: Abilities`, singleline: true },
+  iarm: { type: 3, name: `(armorType) armor: Armor Type`, singleline: true },
+  icla: { type: 3, name: `(itemClass) class: Classification`, singleline: true },
+  iclb: { type: 0, name: `(int) colorB: Tinting Color 3 (Blue)`, singleline: true },
+  iclg: { type: 0, name: `(int) colorG: Tinting Color 2 (Green)`, singleline: true },
+  iclr: { type: 0, name: `(int) colorR: Tinting Color 1 (Red)`, singleline: true },
+  icid: { type: 3, name: `(abilCode) cooldownID: Cooldown Group`, singleline: true },
+  idrp: { type: 0, name: `(bool) drop: Dropped When Carrier Dies`, singleline: true },
+  idro: { type: 0, name: `(bool) droppable: Can Be Dropped`, singleline: true },
+  ifil: { type: 3, name: `(model) file: Model Used`, singleline: true },
+  igol: { type: 0, name: `(int) goldcost: Gold Cost`, singleline: true },
+  ihtp: { type: 0, name: `(int) HP: Hit Points`, singleline: true },
+  iicd: { type: 0, name: `(bool) ignoreCD: Ignore Cooldown`, singleline: true },
+  ilev: { type: 0, name: `(int) Level: Level`, singleline: true },
+  ilum: { type: 0, name: `(int) lumbercost: Lumber Cost`, singleline: true },
+  imor: { type: 0, name: `(bool) morph: Valid Target For Transformation`, singleline: true },
+  ilvo: { type: 0, name: `(int) oldLevel: Level (Unclassified)`, singleline: true },
+  iper: { type: 0, name: `(bool) perishable: Perishable`, singleline: true },
+  iprn: { type: 0, name: `(bool) pickRandom: Include As Random Choice`, singleline: true },
+  ipow: { type: 0, name: `(bool) powerup: Use Automatically When Acquired`, singleline: true },
+  ipri: { type: 0, name: `(int) prio: Priority`, singleline: true },
+  isca: { type: 1, name: `(real) scale: Scaling Value`, singleline: true },
+  issc: { type: 1, name: `(real) selSize: Selection Size - Editor`, singleline: true },
+  isel: { type: 0, name: `(bool) sellable: Can Be Sold By Merchants`, singleline: true },
+  ipaw: { type: 0, name: `(bool) pawnable: Can Be Sold To Merchants`, singleline: true },
+  isto: { type: 0, name: `(int) stockMax: Stock Maximum`, singleline: true },
+  istr: { type: 0, name: `(int) stockRegen: Stock Replenish Interval`, singleline: true },
+  isst: { type: 0, name: `(int) stockStart: Stock Start Delay`, singleline: true },
+  isit: { type: 0, name: `(int) stockInitial: Stock Initial After Start Delay`, singleline: true },
+  iusa: { type: 0, name: `(bool) usable: Actively Used`, singleline: true },
+  iuse: { type: 0, name: `(int) uses: Number of Charges`, singleline: true },
+  ista: { type: 0, name: `(int) stackMax: Max Stacks`, singleline: true },
+  uani: { type: 3, name: `(stringList) animProps: Required Animation Names`, singleline: true },
+  uico: { type: 3, name: `(icon) Art: Icon - Game Interface`, singleline: true },
+  iico: { type: 3, name: `(icon) Art: Interface Icon`, singleline: true },
+  uaap: { type: 3, name: `(stringList) Attachmentanimprops: Required Animation Names - Attachments`, singleline: true },
+  ualp: { type: 3, name: `(stringList) Attachmentlinkprops: Required Attachment Link Names`, singleline: true },
+  uawt: { type: 3, name: `(string) Awakentip: Tooltip - Awaken` },
+  ubpr: { type: 3, name: `(stringList) Boneprops: Required Bone Names`, singleline: true },
+  ubsl: { type: 3, name: `(soundLabel) BuildingSoundLabel: Construction`, singleline: true },
+  ubui: { type: 3, name: `(unitList) Builds: Structures Built`, singleline: true },
+  ubpx: { type: 0, name: `(int) Buttonpos: Button Position (X)`, singleline: true },
+  ubpy: { type: 0, name: `(int) Buttonpos: Button Position (Y)`, singleline: true },
+  ucua: { type: 3, name: `(icon) Casterupgradeart: Caster Upgrade Art`, singleline: true },
+  ucun: { type: 3, name: `(stringList) Casterupgradename: Caster Upgrade Names`, singleline: true },
+  ucut: { type: 3, name: `(stringList) Casterupgradetip: Caster Upgrade Tips`, singleline: true },
+  udep: { type: 3, name: `(unitList) DependencyOr: Dependency Equivalents`, singleline: true },
+  ides: { type: 3, name: `(string) Description: Description` },
+  unsf: { type: 3, name: `(string) EditorSuffix: Name - Editor Suffix` },
+  uhot: { type: 3, name: `(char) Hotkey: Hotkey`, singleline: true },
+  ulfi: { type: 0, name: `(int) LoopingSoundFadeIn: Looping Fade In Rate`, singleline: true },
+  ulfo: { type: 0, name: `(int) LoopingSoundFadeOut: Looping Fade Out Rate`, singleline: true },
+  umki: { type: 3, name: `(itemList) Makeitems: Items Made`, singleline: true },
+  uma1: { type: 2, name: `(unreal) Missilearc: Attack 1 - Projectile Arc`, singleline: true },
+  uma2: { type: 2, name: `(unreal) Missilearc: Attack 2 - Projectile Arc`, singleline: true },
+  ua1m: { type: 3, name: `(model) Missileart: Attack 1 - Projectile Art`, singleline: true },
+  ua2m: { type: 3, name: `(model) Missileart: Attack 2 - Projectile Art`, singleline: true },
+  umh1: { type: 0, name: `(bool) MissileHoming: Attack 1 - Projectile Homing Enabled`, singleline: true },
+  umh2: { type: 0, name: `(bool) MissileHoming: Attack 2 - Projectile Homing Enabled`, singleline: true },
+  ua1z: { type: 0, name: `(int) Missilespeed: Attack 1 - Projectile Speed`, singleline: true },
+  ua2z: { type: 0, name: `(int) Missilespeed: Attack 2 - Projectile Speed`, singleline: true },
+  umsl: { type: 3, name: `(soundLabel) MovementSoundLabel: Movement`, singleline: true },
+  unam: { type: 3, name: `(string) Name: Name` },
+  upro: { type: 3, name: `(stringList) Propernames: Proper Names`, singleline: true },
+  ursl: { type: 3, name: `(soundLabel) RandomSoundLabel: Random`, singleline: true },
+  urqc: { type: 0, name: `(int) Requirescount: Requirements - Tiers Used`, singleline: true },
+  ureq: { type: 3, name: `(techList) Requires: Requirements`, singleline: true },
+  urq1: { type: 3, name: `(techList) Requires1: Requirements - Tier 2`, singleline: true },
+  urq2: { type: 3, name: `(techList) Requires2: Requirements - Tier 3`, singleline: true },
+  urq3: { type: 3, name: `(techList) Requires3: Requirements - Tier 4`, singleline: true },
+  urq4: { type: 3, name: `(techList) Requires4: Requirements - Tier 5`, singleline: true },
+  urq5: { type: 3, name: `(techList) Requires5: Requirements - Tier 6`, singleline: true },
+  urq6: { type: 3, name: `(techList) Requires6: Requirements - Tier 7`, singleline: true },
+  urq7: { type: 3, name: `(techList) Requires7: Requirements - Tier 8`, singleline: true },
+  urq8: { type: 3, name: `(techList) Requires8: Requirements - Tier 9`, singleline: true },
+  urqa: { type: 3, name: `(intList) Requiresamount: Requirements - Levels`, singleline: true },
+  ures: { type: 3, name: `(upgradeList) Researches: Researches Available`, singleline: true },
+  urev: { type: 0, name: `(bool) Revive: Revives Dead Heroes`, singleline: true },
+  utpr: { type: 3, name: `(string) Revivetip: Tooltip - Revive` },
+  ussi: { type: 3, name: `(icon) ScoreScreenIcon: Icon - Score Screen`, singleline: true },
+  usei: { type: 3, name: `(itemList) Sellitems: Items Sold`, singleline: true },
+  useu: { type: 3, name: `(unitList) Sellunits: Units Sold`, singleline: true },
+  uspa: { type: 3, name: `(modelList) Specialart: Special`, singleline: true },
+  utaa: { type: 3, name: `(modelList) Targetart: Target`, singleline: true },
+  utip: { type: 3, name: `(string) Tip: Tooltip - Basic` },
+  utra: { type: 3, name: `(unitList) Trains: Units Trained`, singleline: true },
+  urva: { type: 3, name: `(unitList) Reviveat: Hero Revival Locations`, singleline: true },
+  utub: { type: 3, name: `(string) Ubertip: Tooltip - Extended` },
+  uupt: { type: 3, name: `(unitList) Upgrade: Upgrades To`, singleline: true },
+  uabi: { type: 3, name: `(abilityList) abilList: Normal`, singleline: true },
+  udaa: { type: 3, name: `(abilCode) auto: Default Active Ability`, singleline: true },
+  uhab: { type: 3, name: `(heroAbilityList) heroAbilList: Hero`, singleline: true },
+  uagi: { type: 0, name: `(int) AGI: Starting Agility`, singleline: true },
+  uagp: { type: 2, name: `(unreal) AGIplus: Agility per Level`, singleline: true },
+  ubld: { type: 0, name: `(int) bldtm: Build Time`, singleline: true },
+  ubdi: { type: 0, name: `(int) bountydice: Gold Bounty Awarded - Number of Dice`, singleline: true },
+  ubba: { type: 0, name: `(int) bountyplus: Gold Bounty Awarded - Base`, singleline: true },
+  ubsi: { type: 0, name: `(int) bountysides: Gold Bounty Awarded - Sides per Die`, singleline: true },
+  ulbd: { type: 0, name: `(int) lumberbountydice: Lumber Bounty Awarded - Number of Dice`, singleline: true },
+  ulba: { type: 0, name: `(int) lumberbountyplus: Lumber Bounty Awarded - Base`, singleline: true },
+  ulbs: { type: 0, name: `(int) lumberbountysides: Lumber Bounty Awarded - Sides per Die`, singleline: true },
+  ucol: { type: 2, name: `(unreal) collision: Collision Size`, singleline: true },
+  udef: { type: 0, name: `(int) def: Defense Base`, singleline: true },
+  udty: { type: 3, name: `(defenseType) defType: Defense Type`, singleline: true },
+  udup: { type: 0, name: `(int) defUp: Defense Upgrade Bonus`, singleline: true },
+  ufma: { type: 0, name: `(int) fmade: Food Produced`, singleline: true },
+  ufoo: { type: 0, name: `(int) fused: Food Cost`, singleline: true },
+  ugol: { type: 0, name: `(int) goldcost: Gold Cost`, singleline: true },
+  ugor: { type: 0, name: `(int) goldRep: Repair Gold Cost`, singleline: true },
+  uhpm: { type: 0, name: `(int) HP: Hit Points Maximum (Base)`, singleline: true },
+  uint: { type: 0, name: `(int) INT: Starting Intelligence`, singleline: true },
+  uinp: { type: 2, name: `(unreal) INTplus: Intelligence per Level`, singleline: true },
+  ubdg: { type: 0, name: `(bool) isbldg: Is a Building`, singleline: true },
+  ulev: { type: 0, name: `(int) level: Level`, singleline: true },
+  ulum: { type: 0, name: `(int) lumbercost: Lumber Cost`, singleline: true },
+  ulur: { type: 0, name: `(int) lumberRep: Repair Lumber Cost`, singleline: true },
+  umpi: { type: 0, name: `(int) mana0: Mana Initial Amount`, singleline: true },
+  umpm: { type: 0, name: `(int) manaN: Mana Maximum`, singleline: true },
+  umas: { type: 0, name: `(int) maxSpd: Speed Maximum`, singleline: true },
+  umis: { type: 0, name: `(int) minSpd: Speed Minimum`, singleline: true },
+  unbr: { type: 0, name: `(bool) nbrandom: Neutral Building - Valid As Random Building`, singleline: true },
+  usin: { type: 0, name: `(int) nsight: Sight Radius (Night)`, singleline: true },
+  upap: { type: 3, name: `(pathingListPrevent) preventPlace: Placement Requires`, singleline: true },
+  upra: { type: 3, name: `(attributeType) Primary: Primary Attribute`, singleline: true },
+  uhpr: { type: 2, name: `(unreal) regenHP: Hit Points Regeneration Rate`, singleline: true },
+  umpr: { type: 2, name: `(unreal) regenMana: Mana Regeneration`, singleline: true },
+  uhrt: { type: 3, name: `(regenType) regenType: Hit Points Regeneration Type`, singleline: true },
+  urtm: { type: 0, name: `(int) reptm: Repair Time`, singleline: true },
+  urpo: { type: 0, name: `(bool) repulse: Group Separation - Enabled`, singleline: true },
+  urpg: { type: 0, name: `(int) repulseGroup: Group Separation - Group Number`, singleline: true },
+  urpp: { type: 0, name: `(int) repulseParam: Group Separation - Parameter`, singleline: true },
+  urpr: { type: 0, name: `(int) repulsePrio: Group Separation - Priority`, singleline: true },
+  upar: { type: 3, name: `(pathingListRequire) requirePlace: Placement Prevented By`, singleline: true },
+  usid: { type: 0, name: `(int) sight: Sight Radius (Day)`, singleline: true },
+  umvs: { type: 0, name: `(int) spd: Speed Base`, singleline: true },
+  usma: { type: 0, name: `(int) stockMax: Stock Maximum`, singleline: true },
+  usrg: { type: 0, name: `(int) stockRegen: Stock Replenish Interval`, singleline: true },
+  usst: { type: 0, name: `(int) stockStart: Stock Start Delay`, singleline: true },
+  usit: { type: 0, name: `(int) stockInitial: Stock Initial After Start Delay`, singleline: true },
+  ustr: { type: 0, name: `(int) STR: Starting Strength`, singleline: true },
+  ustp: { type: 2, name: `(unreal) STRplus: Strength per Level`, singleline: true },
+  util: { type: 3, name: `(tilesetList) tilesets: Tilesets`, singleline: true },
+  utyp: { type: 3, name: `(unitClass) type: Unit Classification`, singleline: true },
+  upgr: { type: 3, name: `(upgradeList) upgrades: Upgrades Used`, singleline: true },
+  uabr: { type: 2, name: `(unreal) buffRadius: AI Placement Radius`, singleline: true },
+  uabt: { type: 3, name: `(aiBuffer) buffType: AI Placement Type`, singleline: true },
+  ucbo: { type: 0, name: `(bool) canBuildOn: Can Build On`, singleline: true },
+  ufle: { type: 0, name: `(bool) canFlee: Can Flee`, singleline: true },
+  usle: { type: 0, name: `(bool) canSleep: Sleeps`, singleline: true },
+  ucar: { type: 0, name: `(int) cargoSize: Transported Size`, singleline: true },
+  udtm: { type: 2, name: `(unreal) death: Death Time (seconds)`, singleline: true },
+  udea: { type: 0, name: `(deathType) deathType: Death Type`, singleline: true },
+  ulos: { type: 0, name: `(bool) fatLOS: Use Extended Line of Sight`, singleline: true },
+  ufor: { type: 0, name: `(int) formation: Formation Rank`, singleline: true },
+  uibo: { type: 0, name: `(bool) isBuildOn: Can Be Built On`, singleline: true },
+  umvf: { type: 2, name: `(unreal) moveFloor: Height Minimum`, singleline: true },
+  umvh: { type: 2, name: `(unreal) moveHeight: Height`, singleline: true },
+  umvt: { type: 3, name: `(moveType) movetp: Type`, singleline: true },
+  upru: { type: 0, name: `(int) nameCount: Proper Names Used`, singleline: true },
+  uori: { type: 0, name: `(int) orientInterp: Orientation Interpolation`, singleline: true },
+  upat: { type: 3, name: `(pathingTexture) pathTex: Pathing Map`, singleline: true },
+  upoi: { type: 0, name: `(int) points: Point Value`, singleline: true },
+  upri: { type: 0, name: `(int) prio: Priority`, singleline: true },
+  uprw: { type: 2, name: `(unreal) propWin: Propulsion Window (degrees)`, singleline: true },
+  urac: { type: 3, name: `(unitRace) race: Race`, singleline: true },
+  upaw: { type: 2, name: `(unreal) requireWaterRadius: Placement Requires Water Radius`, singleline: true },
+  utar: { type: 3, name: `(targetList) targType: Targeted as`, singleline: true },
+  umvr: { type: 2, name: `(unreal) turnRate: Turn Rate`, singleline: true },
+  uarm: { type: 3, name: `(armorType) armor: Armor Type`, singleline: true },
+  uble: { type: 1, name: `(real) blend: Animation - Blend Time (seconds)`, singleline: true },
+  uclb: { type: 0, name: `(int) blue: Tinting Color 3 (Blue)`, singleline: true },
+  ushb: { type: 3, name: `(shadowTexture) buildingShadow: Shadow Texture (Building)`, singleline: true },
+  ucam: { type: 0, name: `(bool) campaign: Categorization - Campaign`, singleline: true },
+  utcc: { type: 0, name: `(bool) customTeamColor: Allow Custom Team Color`, singleline: true },
+  udro: { type: 0, name: `(bool) dropItems: Can Drop Items On Death`, singleline: true },
+  uept: { type: 0, name: `(int) elevPts: Elevation - Sample Points`, singleline: true },
+  uerd: { type: 1, name: `(real) elevRad: Elevation - Sample Radius`, singleline: true },
+  umdl: { type: 3, name: `(model) file: Model File`, singleline: true },
+  uver: { type: 0, name: `(versionFlags) fileVerFlags: Model File - Extra Versions`, singleline: true },
+  ufrd: { type: 1, name: `(real) fogRad: Fog of War - Sample Radius`, singleline: true },
+  uclg: { type: 0, name: `(int) green: Tinting Color 2 (Green)`, singleline: true },
+  uhos: { type: 0, name: `(bool) hostilePal: Display as Neutral Hostile`, singleline: true },
+  uine: { type: 0, name: `(bool) inEditor: Placeable In Editor`, singleline: true },
+  umxp: { type: 1, name: `(real) maxPitch: Maximum Pitch Angle (degrees)`, singleline: true },
+  umxr: { type: 1, name: `(real) maxRoll: Maximum Roll Angle (degrees)`, singleline: true },
+  usca: { type: 1, name: `(real) modelScale: Scaling Value`, singleline: true },
+  unbm: { type: 0, name: `(bool) nbmmIcon: Neutral Building - Shows Minimap Icon`, singleline: true },
+  uhhb: { type: 0, name: `(bool) hideHeroBar: Hero - Hide Hero Interface Icon`, singleline: true },
+  uhhm: { type: 0, name: `(bool) hideHeroMinimap: Hero - Hide Hero Minimap Display`, singleline: true },
+  uhhd: { type: 0, name: `(bool) hideHeroDeathMsg: Hero - Hide Hero Death Message`, singleline: true },
+  uhom: { type: 0, name: `(bool) hideOnMinimap: Hide Minimap Display`, singleline: true },
+  uocc: { type: 2, name: `(unreal) occH: Occluder Height`, singleline: true },
+  uclr: { type: 0, name: `(int) red: Tinting Color 1 (Red)`, singleline: true },
+  urun: { type: 1, name: `(real) run: Animation - Run Speed`, singleline: true },
+  ussc: { type: 1, name: `(real) scale: Selection Scale`, singleline: true },
+  uscb: { type: 0, name: `(bool) scaleBull: Scale Projectiles`, singleline: true },
+  usew: { type: 0, name: `(bool) selCircOnWater: Selection Circle On Water`, singleline: true },
+  uslz: { type: 1, name: `(real) selZ: Selection Circle - Height`, singleline: true },
+  ushh: { type: 1, name: `(real) shadowH: Shadow Image - Height`, singleline: true },
+  ushr: { type: 0, name: `(bool) shadowOnWater: Has Water Shadow`, singleline: true },
+  ushw: { type: 1, name: `(real) shadowW: Shadow Image - Width`, singleline: true },
+  ushx: { type: 1, name: `(real) shadowX: Shadow Image - Center X`, singleline: true },
+  ushy: { type: 1, name: `(real) shadowY: Shadow Image - Center Y`, singleline: true },
+  uspe: { type: 0, name: `(bool) special: Categorization - Special`, singleline: true },
+  utco: { type: 0, name: `(teamColor) teamColor: Team Color`, singleline: true },
+  utss: { type: 0, name: `(bool) tilesetSpecific: Has Tileset Specific Data`, singleline: true },
+  uubs: { type: 3, name: `(uberSplat) uberSplat: Ground Texture`, singleline: true },
+  ushu: { type: 3, name: `(shadowImage) unitShadow: Shadow Image (Unit)`, singleline: true },
+  usnd: { type: 3, name: `(unitSound) unitSound: Unit Sound Set`, singleline: true },
+  uuch: { type: 0, name: `(bool) useClickHelper: Use Click Helper`, singleline: true },
+  uwal: { type: 1, name: `(real) walk: Animation - Walk Speed`, singleline: true },
+  uacq: { type: 2, name: `(unreal) acquire: Acquisition Range`, singleline: true },
+  ua1t: { type: 3, name: `(attackType) atkType1: Attack 1 - Attack Type`, singleline: true },
+  ua2t: { type: 3, name: `(attackType) atkType2: Attack 2 - Attack Type`, singleline: true },
+  ubs1: { type: 2, name: `(unreal) backSw1: Attack 1 - Animation Backswing Point`, singleline: true },
+  ubs2: { type: 2, name: `(unreal) backSw2: Attack 2 - Animation Backswing Point`, singleline: true },
+  ucbs: { type: 2, name: `(unreal) castbsw: Animation - Cast Backswing`, singleline: true },
+  ucpt: { type: 2, name: `(unreal) castpt: Animation - Cast Point`, singleline: true },
+  ua1c: { type: 2, name: `(unreal) cool1: Attack 1 - Cooldown Time`, singleline: true },
+  ua2c: { type: 2, name: `(unreal) cool2: Attack 2 - Cooldown Time`, singleline: true },
+  udl1: { type: 2, name: `(unreal) damageLoss1: Attack 1 - Damage Loss Factor`, singleline: true },
+  udl2: { type: 2, name: `(unreal) damageLoss2: Attack 2 - Damage Loss Factor`, singleline: true },
+  ua1d: { type: 0, name: `(int) dice1: Attack 1 - Damage Number of Dice`, singleline: true },
+  ua2d: { type: 0, name: `(int) dice2: Attack 2 - Damage Number of Dice`, singleline: true },
+  ua1b: { type: 0, name: `(int) dmgplus1: Attack 1 - Damage Base`, singleline: true },
+  ua2b: { type: 0, name: `(int) dmgplus2: Attack 2 - Damage Base`, singleline: true },
+  udp1: { type: 2, name: `(unreal) dmgpt1: Attack 1 - Animation Damage Point`, singleline: true },
+  udp2: { type: 2, name: `(unreal) dmgpt2: Attack 2 - Animation Damage Point`, singleline: true },
+  udu1: { type: 0, name: `(int) dmgUp1: Attack 1 - Damage Upgrade Amount`, singleline: true },
+  udu2: { type: 0, name: `(int) dmgUp2: Attack 2 - Damage Upgrade Amount`, singleline: true },
+  ua1f: { type: 0, name: `(int) Farea1: Attack 1 - Area of Effect (Full Damage)`, singleline: true },
+  ua2f: { type: 0, name: `(int) Farea2: Attack 2 - Area of Effect (Full Damage)`, singleline: true },
+  ua1h: { type: 0, name: `(int) Harea1: Attack 1 - Area of Effect (Medium Damage)`, singleline: true },
+  ua2h: { type: 0, name: `(int) Harea2: Attack 2 - Area of Effect (Medium Damage)`, singleline: true },
+  uhd1: { type: 2, name: `(unreal) Hfact1: Attack 1 - Damage Factor - Medium`, singleline: true },
+  uhd2: { type: 2, name: `(unreal) Hfact2: Attack 2 - Damage Factor - Medium`, singleline: true },
+  uisz: { type: 2, name: `(unreal) impactSwimZ: Projectile Impact - Z (Swimming)`, singleline: true },
+  uimz: { type: 2, name: `(unreal) impactZ: Projectile Impact - Z`, singleline: true },
+  ulsz: { type: 2, name: `(unreal) launchSwimZ: Projectile Launch - Z (Swimming)`, singleline: true },
+  ulpx: { type: 2, name: `(unreal) launchX: Projectile Launch - X`, singleline: true },
+  ulpy: { type: 2, name: `(unreal) launchY: Projectile Launch - Y`, singleline: true },
+  ulpz: { type: 2, name: `(unreal) launchZ: Projectile Launch - Z`, singleline: true },
+  uamn: { type: 0, name: `(int) minRange: Minimum Attack Range`, singleline: true },
+  ua1q: { type: 0, name: `(int) Qarea1: Attack 1 - Area of Effect (Small Damage)`, singleline: true },
+  ua2q: { type: 0, name: `(int) Qarea2: Attack 2 - Area of Effect (Small Damage)`, singleline: true },
+  uqd1: { type: 2, name: `(unreal) Qfact1: Attack 1 - Damage Factor - Small`, singleline: true },
+  uqd2: { type: 2, name: `(unreal) Qfact2: Attack 2 - Damage Factor - Small`, singleline: true },
+  ua1r: { type: 0, name: `(int) rangeN1: Attack 1 - Range`, singleline: true },
+  ua2r: { type: 0, name: `(int) rangeN2: Attack 2 - Range`, singleline: true },
+  urb1: { type: 2, name: `(unreal) RngBuff1: Attack 1 - Range Motion Buffer`, singleline: true },
+  urb2: { type: 2, name: `(unreal) RngBuff2: Attack 2 - Range Motion Buffer`, singleline: true },
+  uwu1: { type: 0, name: `(bool) showUI1: Attack 1 - Show UI`, singleline: true },
+  uwu2: { type: 0, name: `(bool) showUI2: Attack 2 - Show UI`, singleline: true },
+  ua1s: { type: 0, name: `(int) sides1: Attack 1 - Damage Sides per Die`, singleline: true },
+  ua2s: { type: 0, name: `(int) sides2: Attack 2 - Damage Sides per Die`, singleline: true },
+  usd1: { type: 2, name: `(unreal) spillDist1: Attack 1 - Damage Spill Distance`, singleline: true },
+  usd2: { type: 2, name: `(unreal) spillDist2: Attack 2 - Damage Spill Distance`, singleline: true },
+  usr1: { type: 2, name: `(unreal) spillRadius1: Attack 1 - Damage Spill Radius`, singleline: true },
+  usr2: { type: 2, name: `(unreal) spillRadius2: Attack 2 - Damage Spill Radius`, singleline: true },
+  ua1p: { type: 3, name: `(targetList) splashTargs1: Attack 1 - Area of Effect Targets`, singleline: true },
+  ua2p: { type: 3, name: `(targetList) splashTargs2: Attack 2 - Area of Effect Targets`, singleline: true },
+  utc1: { type: 0, name: `(int) targCount1: Attack 1 - Maximum Number of Targets`, singleline: true },
+  utc2: { type: 0, name: `(int) targCount2: Attack 2 - Maximum Number of Targets`, singleline: true },
+  ua1g: { type: 3, name: `(targetList) targs1: Attack 1 - Targets Allowed`, singleline: true },
+  ua2g: { type: 3, name: `(targetList) targs2: Attack 2 - Targets Allowed`, singleline: true },
+  uaen: { type: 0, name: `(attackBits) weapsOn: Attacks Enabled`, singleline: true },
+  ua1w: { type: 3, name: `(weaponType) weapTp1: Attack 1 - Weapon Type`, singleline: true },
+  ua2w: { type: 3, name: `(weaponType) weapTp2: Attack 2 - Weapon Type`, singleline: true },
+  ucs1: { type: 3, name: `(combatSound) weapType1: Attack 1 - Weapon Sound`, singleline: true },
+  ucs2: { type: 3, name: `(combatSound) weapType2: Attack 2 - Weapon Sound`, singleline: true },
+  uabs: { type: 3, name: `(abilitySkinList) abilSkinList: Normal Skin`, singleline: true },
+  uhas: { type: 3, name: `(abilitySkinList) heroAbilSkinList: Hero Skin`, singleline: true }
+};
+var W3UTOMLMap_default = map6;
+
+// node_modules/warodel/w3abdhqtu/W3T.mjs
+var W3T = class _W3T extends W3ABDHQTU {
+  /** @param {Buffer|ArrayBuffer} buffer */
+  constructor(buffer) {
+    super(buffer, false);
+  }
+  /**
+   * @param {string} json
+   * @return {W3T}
+   */
+  static fromJSON(json) {
+    return super._fromJSON(new _W3T(new ArrayBuffer(0)), json, false);
+  }
+  /**
+   * @param {string} ini
+   * @return {W3T}
+   */
+  static fromTOML(ini) {
+    return super._fromTOML(new _W3T(new ArrayBuffer(0)), ini, false, W3UTOMLMap_default);
+  }
+  /** @return {string} */
+  toTOML() {
+    return super._toTOML(W3UTOMLMap_default, { forceType: false });
+  }
+};
+
+// node_modules/warodel/w3abdhqtu/W3U.mjs
+var W3U = class _W3U extends W3ABDHQTU {
+  /** @param {Buffer|ArrayBuffer} buffer */
+  constructor(buffer) {
+    super(buffer, false);
+  }
+  /**
+   * @param {string} json
+   * @return {W3U}
+   */
+  static fromJSON(json) {
+    return super._fromJSON(new _W3U(new ArrayBuffer(0)), json, false);
+  }
+  /**
+   * @param {string} ini
+   * @return {W3U}
+   */
+  static fromTOML(ini) {
+    return super._fromTOML(new _W3U(new ArrayBuffer(0)), ini, false, W3UTOMLMap_default);
+  }
+  /** @return {string} */
+  toTOML() {
+    return super._toTOML(W3UTOMLMap_default, { forceType: false });
+  }
+};
+
+// render/renderer.js
 var electron = window.electron;
-var dialog = window.dialog;
+var path2 = window.path;
 var fs = window.fs;
 var buttonSelect = document.querySelector(".button-select");
 var buttonClear = document.querySelector(".button-clear");
+var buttonStart = document.querySelector(".button-start");
 var filesContainer = document.querySelector(".files");
+var processContainer = document.querySelector(".process");
+var fileList = new FileMap();
+var buttons = () => {
+  const disabled = fileList.isEmpty;
+  buttonSelect.disabled = false;
+  buttonClear.disabled = disabled;
+  buttonStart.disabled = disabled;
+};
 buttonSelect.addEventListener("click", async () => {
   const paths = await electron.showOpenDialogSync({
     title: "Select game data file",
@@ -4157,14 +4809,120 @@ buttonSelect.addEventListener("click", async () => {
       { name: "Game data", extensions: ["w3a", "w3u", "toml"] }
     ]
   });
-  console.log(paths);
   if (paths === void 0)
     return;
-  const w3a = new W3A(new ArrayBuffer(0));
+  await fileList.add(paths);
+  fileList.render = filesContainer;
+  buttons();
 });
 buttonClear.addEventListener("click", async () => {
-  const s = await fs.readFileSync("/Users/nazarpunk/Downloads/wa.toml", { encoding: "utf8" });
-  console.log("1", s);
+  fileList.clear(filesContainer);
+  processContainer.textContent = ``;
+  buttons();
+});
+buttonStart.addEventListener("click", async () => {
+  buttonSelect.disabled = true;
+  buttonClear.disabled = true;
+  buttonStart.disabled = true;
+  let html = "";
+  const _error = (text) => html += `<div class="error">${text}</div>
+`;
+  for (const v of Object.values(fileList.map)) {
+    for (const parts of Object.values(v)) {
+      const filepath = await path2.join(parts.dir, parts.base);
+      html += filepath;
+      const ok = " <b>[OK]</b>\n\n";
+      let w3;
+      let file;
+      if (parts.ext === ".toml") {
+        file = await fs.readFileSync(filepath, { encoding: "utf8" }).catch((e) => e);
+        if (file instanceof Error) {
+          _error(file.message);
+          continue;
+        }
+        const newparts = await path2.parse(parts.name);
+        switch (newparts.ext) {
+          case ".w3a":
+            w3 = W3A.fromTOML(file);
+            break;
+          case ".w3b":
+            w3 = W3B.fromTOML(file);
+            break;
+          case ".w3d":
+            w3 = W3D.fromTOML(file);
+            break;
+          case ".w3h":
+            w3 = W3H.fromTOML(file);
+            break;
+          case ".w3q":
+            w3 = W3Q.fromTOML(file);
+            break;
+          case ".w3t":
+            w3 = W3T.fromTOML(file);
+            break;
+          case ".w3u":
+            w3 = W3U.fromTOML(file);
+            break;
+          default:
+            _error(`Wrong target extension: ${newparts.ext.length ? newparts.ext : "[empty string]"}`);
+            continue;
+        }
+        const newfilepath = await path2.join(parts.dir, newparts.base);
+        const response = await fs.writeFileSync(newfilepath, new Uint8Array(w3.write()), { flag: "w+" }).catch((e) => e);
+        if (response instanceof Error) {
+          _error(response.message);
+          continue;
+        }
+        html += ok;
+        continue;
+      }
+      const uintlist = await fs.readFileSync(filepath).catch((e) => e);
+      if (uintlist instanceof Error) {
+        _error(uintlist.message);
+        continue;
+      }
+      file = new ArrayBuffer(uintlist.length);
+      const bufferView = new Uint8Array(file);
+      bufferView.set(uintlist);
+      switch (parts.ext) {
+        case ".w3a":
+          w3 = new W3A(file);
+          break;
+        case ".w3b":
+          w3 = new W3B(file);
+          break;
+        case ".w3d":
+          w3 = new W3D(file);
+          break;
+        case ".w3h":
+          w3 = new W3H(file);
+          break;
+        case ".w3q":
+          w3 = new W3Q(file);
+          break;
+        case ".w3t":
+          w3 = new W3T(file);
+          break;
+        case ".w3u":
+          w3 = new W3U(file);
+          break;
+        default:
+          _error(`Missing file extension: ${parts.ext}`);
+          continue;
+      }
+      w3.read();
+      if (w3.errors.length > 0) {
+        for (const error of w3.errors)
+          _error(error.message);
+        continue;
+      } else {
+        fs.writeFileSync(`${filepath}.toml`, w3.toTOML(), { flag: "w+" });
+      }
+      html += ok;
+    }
+  }
+  processContainer.innerHTML = html;
+  buttons();
 });
 /*! Bundled license information:
 

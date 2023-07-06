@@ -8,7 +8,7 @@
   "scripts": {
     "start": "electron .",
     "inspect": "electron-forge start --inspect-electron",
-    "watch": "esbuild renderer.js --watch --platform=node --target=esnext --format=cjs --bundle --supported:dynamic-import=false --outfile=dist/renderer.js",
+    "watch": "esbuild render/renderer.js --watch --platform=node --target=esnext --format=cjs --bundle --supported:dynamic-import=false --outfile=dist/renderer.js",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "start-watch": "concurrently --kill-others \"npm run start\" \"npm run watch\""

@@ -24,7 +24,6 @@ const createWindow = () => {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: true,
             nodeIntegrationInWorker: true,
-            enableRemoteModule: false,
             contextIsolation: true,
             devTools: !app.isPackaged,
         }
@@ -33,10 +32,12 @@ const createWindow = () => {
     win.loadFile('index.html').then();
 }
 
-
 app.whenReady().then(() => {
     ipcMain.handle('showOpenDialogSync', (event, options) => dialog.showOpenDialogSync(options));
     ipcMain.handle('readFileSync', (event, path, options) => fs.readFileSync(path, options));
+    ipcMain.handle('writeFileSync', (event, path, data, options) => fs.writeFileSync(path, data, options));
+    ipcMain.handle('path-parse', (event, filepath) => path.parse(filepath));
+    ipcMain.handle('path-join', (event, ...paths) => path.join(...paths));
 
     createWindow();
 
