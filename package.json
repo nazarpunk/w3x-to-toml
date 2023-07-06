@@ -5,6 +5,7 @@
   "author": "nazarpunk <nazarpunk@gmail.com>",
   "license": "MIT",
   "main": "main.js",
+  "homepage": "./",
   "scripts": {
     "start": "electron .",
     "watch": "esbuild render/renderer.js --watch --platform=node --target=esnext --format=cjs --bundle --supported:dynamic-import=false --outfile=build/renderer.js",
@@ -25,6 +26,14 @@
   },
   "build": {
     "appId": "com.electron.${name}",
+    "files": [
+      "./build/**/*",
+      "./fonts/**/*",
+      "main.js",
+      "preload.js",
+      "index.html",
+      "main.css"
+    ],
     "win": {
       "target": "portable",
       "publish": [

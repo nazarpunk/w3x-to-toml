@@ -25,7 +25,7 @@ const createWindow = () => {
             nodeIntegration: true,
             nodeIntegrationInWorker: true,
             contextIsolation: true,
-            devTools: !app.isPackaged,
+            devTools: true,
         }
     });
 
