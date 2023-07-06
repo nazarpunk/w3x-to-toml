@@ -6,7 +6,7 @@
   "license": "MIT",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
+    "start": "electron-forge start",
     "inspect": "electron-forge start --inspect-electron",
     "watch": "esbuild render/renderer.js --watch --platform=node --target=esnext --format=cjs --bundle --supported:dynamic-import=false --outfile=dist/renderer.js",
     "package": "electron-forge package",
@@ -24,9 +24,22 @@
     "@electron-forge/maker-squirrel": "^6.2.1",
     "@electron-forge/maker-zip": "^6.2.1",
     "@electron-forge/plugin-auto-unpack-natives": "^6.2.1",
+    "@rabbitholesyndrome/electron-forge-maker-portable": "^0.1.1",
+    "concurrently": "^8.2.0",
     "electron": "^25.2.0",
     "electron-reloader": "^1.2.3",
-    "esbuild": "0.18.11",
-    "concurrently": "^8.2.0"
+    "esbuild": "0.18.11"
+  },
+  "build": {
+    "appId": "com.electron.${name}",
+    "config": {
+      "forge": {
+        "makers": [
+          {
+            "name": "@rabbitholesyndrome/electron-forge-maker-portable"
+          }
+        ]
+      }
+    }
   }
 }
