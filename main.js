@@ -18,6 +18,8 @@ const createWindow = () => {
     const win = new BrowserWindow({
         width: 800,
         height: 600,
+        titleBarStyle: 'hidden',
+        titleBarOverlay: true,
         alwaysOnTop: !app.isPackaged,
         darkTheme: true,
         webPreferences: {
@@ -25,7 +27,7 @@ const createWindow = () => {
             nodeIntegration: true,
             nodeIntegrationInWorker: true,
             contextIsolation: true,
-            devTools: true,
+            devTools: !app.isPackaged,
         }
     });
 

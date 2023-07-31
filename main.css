@@ -23,7 +23,7 @@ body {
     box-sizing: border-box;
     min-height: 100%;
     margin: 0;
-    padding: 1rem;
+    padding: 0 1rem 1rem;
     gap: 1rem;
 }
 
@@ -34,6 +34,27 @@ body {
 
 .pre {
     white-space: pre-wrap;
+}
+
+.taskbar {
+    font-size: 28px;
+    font-weight: bold;
+    position: sticky;
+    z-index: 10;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    margin-right: -1rem;
+    margin-left: -1rem;
+    -webkit-user-select: none;
+    text-align: center;
+    text-transform: uppercase;
+    color: #1eac39;
+    background-color: #125135;
+    text-shadow: none;
+    -webkit-app-region: drag;
 }
 
 .error {
