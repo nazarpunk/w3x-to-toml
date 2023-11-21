@@ -1,6 +1,6 @@
 {
   "name": "w3x-to-toml",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "w3x-to-toml",
   "author": "nazarpunk <nazarpunk@gmail.com>",
   "license": "MIT",
@@ -15,13 +15,13 @@
     "dist": "electron-builder --publish never"
   },
   "devDependencies": {
-    "concurrently": "^8.2.0",
-    "electron": "^25.2.0",
-    "electron-builder": "^24.4.0",
+    "concurrently": "^8.2.2",
+    "electron": "^27.1.0",
+    "electron-builder": "^24.6.4",
     "electron-reloader": "^1.2.3",
-    "esbuild": "^0.18.11",
-    "icon-gen": "^3.0.1",
-    "jimp": "^0.22.8",
+    "esbuild": "^0.19.7",
+    "icon-gen": "^4.0.0",
+    "jimp": "^0.22.10",
     "warodel": "^1.0.9"
   },
   "build": {
