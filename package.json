@@ -9,19 +9,20 @@
   "scripts": {
     "start": "electron .",
     "watch": "esbuild render/renderer.js --watch --platform=node --target=esnext --format=cjs --bundle --supported:dynamic-import=false --outfile=build/renderer.js",
+    "patch": "npm version patch -m \"Upgrade to %s\"",
     "start-watch": "concurrently --kill-others \"yarn run start\" \"yarn run watch\"",
     "postinstall": "electron-builder install-app-deps",
     "publish": "electron-builder --publish always",
     "dist": "electron-builder --publish never"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2",
-    "electron": "^27.1.0",
-    "electron-builder": "^24.6.4",
+    "concurrently": "^8.2.0",
+    "electron": "^25.2.0",
+    "electron-builder": "^24.4.0",
     "electron-reloader": "^1.2.3",
-    "esbuild": "^0.19.7",
-    "icon-gen": "^4.0.0",
-    "jimp": "^0.22.10",
+    "esbuild": "^0.18.11",
+    "icon-gen": "^3.0.1",
+    "jimp": "^0.22.8",
     "warodel": "^1.0.9"
   },
   "build": {
