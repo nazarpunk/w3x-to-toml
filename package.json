@@ -9,11 +9,9 @@
   "scripts": {
     "start": "electron .",
     "watch": "esbuild render/renderer.js --watch --platform=node --target=esnext --format=cjs --bundle --supported:dynamic-import=false --outfile=build/renderer.js",
-    "patch": "npm version patch -m \"Upgrade to %s\"",
+    "publish": "npm version patch -m \"Upgrade to %s\"",
     "start-watch": "concurrently --kill-others \"yarn run start\" \"yarn run watch\"",
-    "postinstall": "electron-builder install-app-deps",
-    "publish": "electron-builder --publish always",
-    "dist": "electron-builder --publish never"
+    "postinstall": "electron-builder install-app-deps"
   },
   "devDependencies": {
     "concurrently": "^8.2.0",
@@ -24,28 +22,5 @@
     "icon-gen": "^3.0.1",
     "jimp": "^0.22.8",
     "warodel": "^1.0.9"
-  },
-  "build": {
-    "appId": "com.electron.${name}",
-    "files": [
-      "./build/**/*",
-      "./fonts/**/*",
-      "main.js",
-      "preload.js",
-      "main.css",
-      "index.html"
-    ],
-    "win": {
-      "target": "portable",
-      "publish": [
-        "github"
-      ]
-    },
-    "linux": {
-      "target": "AppImage",
-      "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
-      "icon": "icons/icon.png",
-      "category": "Development"
-    }
   }
 }

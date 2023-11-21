@@ -32,3 +32,6 @@ const gen = async () => {
 }
 
 gen().then();
+
+// https://github.com/develar/app-builder/issues/68
+
